@@ -41,6 +41,7 @@ public class Character : MonoBehaviour, IDamageable
     {
         BaseStats = new Dictionary<StatType, float>()
         {
+            [StatType.DamageTakenIncreas] = Class.DamageIncreas,
             [StatType.Armor] = Class.Armor,
             [StatType.DamageIncreas] = Class.DamageIncreas,
             [StatType.DamageMore] = Class.DamageMore,

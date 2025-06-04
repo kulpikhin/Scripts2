@@ -1,5 +1,6 @@
 public enum StatType
 {
+    DamageTakenIncreas,
     Armor,
     DamageIncreas,
     DamageMore,

@@ -156,6 +156,8 @@ public class CastManager : MonoBehaviour
             yield return null;
         }
 
+        slider.value = 0;
+
         character.Abilities.UseAbility(AbilitiesQueue.Dequeue());
         _casting = false;
 
@@ -164,6 +166,20 @@ public class CastManager : MonoBehaviour
 
     private float CalculateCastTime(float defaultCastTime)
     {
-        return (defaultCastTime / 100) * (character.Stats.GetStat(StatType.Speed) + 100);
+        float speedStat = character.Stats.GetStat(StatType.Speed);
+        float adjustedTime;
+
+        if (speedStat >= 0)
+        {
+            float speedIncreased = (defaultCastTime / 100f) * speedStat;
+            adjustedTime = defaultCastTime + speedIncreased;
+        }
+        else
+        {
+            float speedIncreased = (defaultCastTime / 100f) * speedStat;
+            adjustedTime = defaultCastTime - speedIncreased;
+        }
+
+        return Mathf.Max(adjustedTime, 0.1f);
     }
 }

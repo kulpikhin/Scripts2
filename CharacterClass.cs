@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCharacterClass", menuName = "Characters/CharacterClass")]
 public class CharacterClass : ScriptableObject
 {
+    public float DamageTakenIncreas;
     public float Armor;
     public float DamageIncreas;
     public float DamageMore;

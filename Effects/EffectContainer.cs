@@ -73,7 +73,7 @@ public class EffectContainer : MonoBehaviour
         var data = EffectDatas.GetEffectData(inst.Type);
         data.Logic.OnTick(_owner, inst.Power);
 
-        Debug.Log("tick " + inst.Power);
+        //Debug.Log("tick " + inst.Power);
 
         // 2) Новая строка: обновляем UI-иконку этого эффекта
         if (_activeIcons.TryGetValue(inst.Type, out var icon))
