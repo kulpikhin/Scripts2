@@ -125,7 +125,7 @@ public class EffectContainer : MonoBehaviour
         TypeCoroutines.Remove(type);
     }
 
-    private void RemoveIcon(EffectType type)
+    internal void RemoveIcon(EffectType type)
     {
         if (_activeIcons.TryGetValue(type, out var icon))
         {

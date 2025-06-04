@@ -7,29 +7,29 @@ public class RefreshStrategy : IEffectStrategy
         var type = newInstance.Type;
         if (!container.Instances.TryGetValue(type, out var list))
         {
-            list = new List<EffectInstance> { newInstance };
+            list = new List<EffectInstance>();
             container.Instances[type] = list;
-            newInstance.OnTick += container.HandleTick;
-            newInstance.OnExpired += container.OnExpire;
-            newInstance.OnAply += container.OnAply;
-            newInstance.Start();
         }
-        else
+        else if (list.Count > 0)
         {
             var old = list[0];
             if (newInstance.Power >= old.Power)
             {
                 // Expire the old instance so its OnExpired logic executes
                 old.Stop(container._owner);
-
-                list[0] = newInstance;
-                newInstance.OnTick += container.HandleTick;
-                newInstance.OnExpired += container.OnExpire;
-                newInstance.OnAply += container.OnAply; 
-
-                newInstance.Start();
+                list.Clear();
+            }
+            else
+            {
+                return;
             }
         }
+
+        list.Add(newInstance);
+        newInstance.OnTick += container.HandleTick;
+        newInstance.OnExpired += container.OnExpire;
+        newInstance.OnAply += container.OnAply;
+        newInstance.Start();
     }
 
     public void HandleExpiration(EffectContainer container, EffectInstance expiredInstance)
@@ -43,3 +43,5 @@ public class RefreshStrategy : IEffectStrategy
         if (list.Count == 0) container.Instances.Remove(type);
     }
 }
+
+

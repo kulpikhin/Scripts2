@@ -36,8 +36,7 @@ public class EffectIconUI : MonoBehaviour
     {
         if (!_container.Instances.TryGetValue(_effectType, out var list) || list.Count == 0)
         {
-            Debug.Log("destroy");
-            Destroy(gameObject);
+            _container.RemoveIcon(_effectType);
             return;
         }
         switch (_mode)
