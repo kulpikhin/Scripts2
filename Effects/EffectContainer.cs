@@ -89,6 +89,7 @@ public class EffectContainer : MonoBehaviour
     internal void OnExpire(EffectInstance inst)
     {
         var data = EffectDatas.GetEffectData(inst.Type);
+        data.Logic.OnExpired(_owner, inst.Power);
 
         _strategies[inst.RefreshMode].HandleExpiration(this, inst);
         var type = inst.Type;

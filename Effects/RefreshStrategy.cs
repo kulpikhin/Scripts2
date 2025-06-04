@@ -18,12 +18,16 @@ public class RefreshStrategy : IEffectStrategy
                 // Expire the old instance so its OnExpired logic executes
                 old.Stop(container._owner);
                 list.Clear();
+                container.Instances[type] = list;
             }
             else
             {
                 return;
             }
         }
+
+        if (!container.Instances.ContainsKey(type))
+            container.Instances[type] = list;
 
         list.Add(newInstance);
         newInstance.OnTick += container.HandleTick;
