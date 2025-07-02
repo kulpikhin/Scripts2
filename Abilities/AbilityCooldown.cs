@@ -71,7 +71,7 @@ public class AbilityCooldown : MonoBehaviour
 
             ability.icon.slider.value = CurrentCDTime;
 
-            yield return _waitTime;
+            yield return null;
         }
 
         IsCooldown = false;

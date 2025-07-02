@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class TargetFinder : MonoBehaviour
 {
@@ -19,11 +18,11 @@ public class TargetFinder : MonoBehaviour
 
         if (ability.AbilityTypes.HasFlag(AbilityType.Damage) || ability.AbilityTypes.HasFlag(AbilityType.Debuff))
         {
-            side = (TeamSide)((byte)character.GetSide() ^ 1);
+            side = character.GetSide();
         }
         else
         {
-            side = character.GetSide();
+            side = (TeamSide)((byte)character.GetSide() ^ 1);
         }
 
         List<IDamageable> targets = battleManager.GetRandomTargets(side, ability.CountTargets);

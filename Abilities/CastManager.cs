@@ -15,6 +15,8 @@ public class CastManager : MonoBehaviour
     private Coroutine _castingRoutine;
     private bool _casting;
     private TargetFinder _targetFinder;
+    private CharacterAnimator _characterAnimator;
+    private List<IDamageable> Targets;
 
     public float CurrentCastTime { get; private set; }
 
@@ -25,6 +27,7 @@ public class CastManager : MonoBehaviour
             character = GetComponent<Character>();
             _targetFinder = GetComponent<TargetFinder>();
             AbilitiesQueue = new Queue<Ability>();
+            _characterAnimator = GetComponent<CharacterAnimator>();
             character.Died += StopCasting;
             SubAllAbilites();
         }
@@ -71,9 +74,11 @@ public class CastManager : MonoBehaviour
             {
                 if (CheckMana(AbilitiesQueue.Peek().ManaCost))
                 {
-                    AbilitiesQueue.Peek().Targets = _targetFinder.GetTarget(character, AbilitiesQueue.Peek());
+                    Targets = _targetFinder.GetTarget(character, AbilitiesQueue.Peek());
 
-                    foreach(IDamageable target in AbilitiesQueue.Peek().Targets)
+                    AbilitiesQueue.Peek().Targets = Targets;
+
+                    foreach (IDamageable target in AbilitiesQueue.Peek().Targets)
                     {
                         target.Died += OnTargetDead;
                     }
@@ -99,7 +104,7 @@ public class CastManager : MonoBehaviour
     {
         target.Died -= OnTargetDead;
 
-        if(AbilitiesQueue.Count > 0)
+        if (AbilitiesQueue.Count > 0)
         {
             AbilitiesQueue.Peek().Targets.Remove(target);
 
@@ -119,7 +124,7 @@ public class CastManager : MonoBehaviour
             return true;
         }
 
-         return false;
+        return false;
     }
 
     private void StartCasting(Ability currentAbility)
@@ -155,6 +160,8 @@ public class CastManager : MonoBehaviour
 
             yield return null;
         }
+
+        _characterAnimator.Attack();
 
         slider.value = 0;
 

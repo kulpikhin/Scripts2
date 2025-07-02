@@ -73,6 +73,7 @@ public class CharacterAbilities : MonoBehaviour
         foreach (Ability ability in abilities)
         {
             ability._character = character;
+            ability.StartPosition = character.StartSpellPosition;
         }
     }
 }

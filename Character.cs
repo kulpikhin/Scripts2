@@ -8,14 +8,17 @@ public class Character : MonoBehaviour, IDamageable
     [SerializeField] public TeamSide Side;
     [SerializeField] public CharacterAbilities abilities;
 
+    private CharacterAnimator _animator;
 
     public event UnityAction<IDamageable> Died;
 
+    public UnityEngine.Transform StartSpellPosition;
     public CharacterClass Class;
     public CastManager castManager;
     public SubClass characterSubClass;
+    public UnityEngine.Transform _transform { get; set; }
     public bool IsDead { get; set; }
-    public CharacterAbilities Abilities {  get; set; }
+    public CharacterAbilities Abilities { get; set; }
 
     private Dictionary<StatType, float> BaseStats;
 
@@ -26,8 +29,10 @@ public class Character : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
+        _transform = transform;
         Abilities = abilities;
         FillBaseStats();
+        _animator = GetComponent<CharacterAnimator>();
         Stats = GetComponent<StatContainer>();
         Stats.SetStats(BaseStats);
         Stats.SetCurrentStats();
@@ -79,6 +84,11 @@ public class Character : MonoBehaviour, IDamageable
         Stats.OnDead -= OnDeath;
     }
 
+    public void TakeSwing()
+    {
+        _animator.TakeSwing();
+    }
+
     public void ApplyEffect(EffectInstance effect)
     {
         Container.ApplyEffect(effect);
@@ -91,7 +101,8 @@ public class Character : MonoBehaviour, IDamageable
 
     public void TakeDamage(int damage)
     {
-        Stats.TakeDamage(damage);
+        Debug.Log("Damage = " + damage);
+        Stats.TakeDamage(damage);        
     }
 
     private void OnDeath()

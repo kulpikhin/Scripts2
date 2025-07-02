@@ -10,9 +10,20 @@ public interface IDamageable
     public EffectContainer Container { get; set; }
     public CharacterAbilities Abilities { get; set; }
     public bool IsDead { get; set; }
+    public Transform _transform { get; set; }
+
+    public void SetTansform()
+    {
+
+    }
 
     public void TakeDamage(int damage)
     {
+    }
+
+    public void TakeSwing()
+    {
+        
     }
 
     public void ApplyEffect(EffectInstance effect)

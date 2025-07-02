@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Playables;
 using UnityEngine;
 
 //[RequireComponent(typeof(AbilityCooldown))]
@@ -12,6 +11,9 @@ public class Ability : MonoBehaviour
     public List<AbilityType> ListTypes;
 
     public List<IDamageable> Targets;
+
+    public Projectile Proj;
+    public Transform StartPosition;
 
     public int CountTargets;
     public IconAbility icon;
@@ -30,7 +32,7 @@ public class Ability : MonoBehaviour
 
     public Character _character;
 
-    public AbilityCooldown CooldownAbility {get; private set;}
+    public AbilityCooldown CooldownAbility { get; private set; }
 
     public void Init()
     {
@@ -39,19 +41,66 @@ public class Ability : MonoBehaviour
         FeelLists();
     }
 
-    public virtual void Activate() 
+    public virtual void Activate()
     {
-        if(Targets.Count > 0)
-
+        if (Targets.Count > 0)
         {
-            foreach (IDamageable target in Targets)
+            if (Tags.HasFlag(AbilityTag.Projectile))
             {
-                Debug.Log(_character.Name + " использует способность на " + target.Name);
-                AbilityEffectCalculator.CalculateEffect(this, target);
+                AvtivateProjectile();
+            }
+            else
+            {
+                foreach (IDamageable target in Targets)
+                {
+                    CalculateEffect(target);
+                }
             }
 
             CooldownAbility.StartCooldawn(this);
-        }    
+        }
+    }
+
+    public virtual void AvtivateProjectile()
+    {
+        List<Projectile> Projectiles = new List<Projectile>();
+
+        foreach (IDamageable target in Targets)
+        {
+            Projectile projectile = Instantiate(Proj, _character._transform);
+/*
+            if (_character.Side == TeamSide.Right)
+            {
+                projectile.transform.localScale = new Vector2(projectile.transform.localScale.x * (-1), projectile.transform.localScale.y);
+            }
+*/
+            projectile.transform.position = new Vector2(StartPosition.position.x, StartPosition.position.y);
+            Vector2 direction = target._transform.position - projectile.transform.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+            Projectiles.Add(projectile);
+            projectile.EndFlying += CalculatePrjectileEffect;
+            projectile.Launch(StartPosition.position, target);
+        }
+    }
+
+    private void CalculateEffect(IDamageable target)
+    {
+        AbilityEffectCalculator.CalculateEffect(this, target);
+
+        if (Tags.HasFlag(AbilityTag.Melee))
+        {
+            target.TakeSwing();
+        }
+    }
+
+    private void CalculatePrjectileEffect(IDamageable target, Projectile proj)
+    {
+        if (!target.IsDead)
+        {
+            AbilityEffectCalculator.CalculateEffect(this, target);
+            proj.EndFlying -= CalculatePrjectileEffect;
+        }
     }
 
     private void FeelLists()
