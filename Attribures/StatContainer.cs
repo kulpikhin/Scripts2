@@ -41,7 +41,7 @@ public class StatContainer : MonoBehaviour
                 IsDead = true;
             }
             else
-            {               
+            {
                 _values[StatType.CurrentHealth] -= damage;
             }
 
@@ -60,7 +60,21 @@ public class StatContainer : MonoBehaviour
 
     public void SpentMana(int value)
     {
-        _values[StatType.CurrentMana] -= value; // должна быть проверка
+        if (_values[StatType.CurrentMana] - value < 0)
+        {
+            _values[StatType.CurrentMana] = 0;
+        }
+        else
+        {
+            _values[StatType.CurrentMana] -= value;
+        }
+
+        ManaChanged?.Invoke(Convert.ToInt32(_values[StatType.CurrentMana]));
+    }
+
+    public void ManaRecover(int value)
+    {
+        _values[StatType.CurrentMana] = Mathf.Clamp(_values[StatType.CurrentMana] + value, 0, _values[StatType.MaxMana]);
         ManaChanged?.Invoke(Convert.ToInt32(_values[StatType.CurrentMana]));
     }
 

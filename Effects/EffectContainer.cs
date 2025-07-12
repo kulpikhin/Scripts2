@@ -40,6 +40,8 @@ public class EffectContainer : MonoBehaviour
     public void ApplyEffect(EffectInstance newInstance)
     {
         newInstance.Init(this);
+        var data = EffectDatas.GetEffectData(newInstance.Type);
+        data.Logic.OnApply(_owner, newInstance.Power, data);
 
         _strategies[newInstance.RefreshMode].Apply(this, newInstance);
 
@@ -83,7 +85,7 @@ public class EffectContainer : MonoBehaviour
     public void OnAply(EffectInstance inst)
     {
         var data = EffectDatas.GetEffectData(inst.Type);
-        data.Logic.OnApply(_owner, inst.Power);
+        data.Logic.OnApply(_owner, inst.Power, data);
     }
 
     internal void OnExpire(EffectInstance inst)

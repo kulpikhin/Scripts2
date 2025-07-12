@@ -4,5 +4,6 @@ public enum EffectType
     Chill,
     Shock,
     Poison,
-    Bleed
+    Bleed,
+    Regenerate
 }

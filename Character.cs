@@ -9,6 +9,7 @@ public class Character : MonoBehaviour, IDamageable
     [SerializeField] public CharacterAbilities abilities;
 
     private CharacterAnimator _animator;
+    private RegenRoutine _regenRoutine;
 
     public event UnityAction<IDamageable> Died;
 
@@ -16,6 +17,7 @@ public class Character : MonoBehaviour, IDamageable
     public CharacterClass Class;
     public CastManager castManager;
     public SubClass characterSubClass;
+
     public UnityEngine.Transform _transform { get; set; }
     public bool IsDead { get; set; }
     public CharacterAbilities Abilities { get; set; }
@@ -29,6 +31,8 @@ public class Character : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
+        _regenRoutine = GetComponent<RegenRoutine>();
+        _regenRoutine.SetCharecter(this);
         _transform = transform;
         Abilities = abilities;
         FillBaseStats();
@@ -87,6 +91,11 @@ public class Character : MonoBehaviour, IDamageable
     public void TakeSwing()
     {
         _animator.TakeSwing();
+    }
+
+    public void Heal(int power)
+    {
+        Stats.Heal(power);
     }
 
     public void ApplyEffect(EffectInstance effect)

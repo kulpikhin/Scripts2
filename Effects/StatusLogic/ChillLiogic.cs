@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ChillLiogic : EffectLogic
 {
-    public override void OnApply(IDamageable target, int power)
+    public override void OnApply(IDamageable target, int power, EffectData data)
     {
         Debug.Log("Chill = " + power);
         target.Stats.AddStat(StatType.Speed, -power);

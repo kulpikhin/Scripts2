@@ -13,4 +13,5 @@ public class EffectData : ScriptableObject
     public float power;
     public IDamageable Target;
     public bool IsStrongest;
+    public ParticleSystem VFXPrefab;
 }

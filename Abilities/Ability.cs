@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 //[RequireComponent(typeof(AbilityCooldown))]
 public class Ability : MonoBehaviour
@@ -29,6 +30,7 @@ public class Ability : MonoBehaviour
     public float AilmentChance;
     public float AilmentPower;
     public float AilmentDuration;
+    //public ParticleSystem VFXPrefab;
 
     public Character _character;
 
@@ -53,6 +55,13 @@ public class Ability : MonoBehaviour
             {
                 foreach (IDamageable target in Targets)
                 {
+/*                    if (VFXPrefab != null)
+                    {
+                        Debug.Log("vfx");
+                        ParticleSystem vfx = Instantiate(VFXPrefab, target._transform);
+                        VFXPrefab.Play();
+                    }*/
+
                     CalculateEffect(target);
                 }
             }

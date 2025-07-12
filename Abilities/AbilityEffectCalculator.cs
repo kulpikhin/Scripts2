@@ -33,9 +33,10 @@ public static class AbilityEffectCalculator
     private static void HandleDamage(Ability ability, IDamageable target)
     {
         int armorResist = Convert.ToInt32(target.Stats.GetStat(StatType.Armor)) / 100;
-        int finalDamage = Convert.ToInt32 (((float)ability.Damage) * (1 - (float)armorResist));
-        target.TakeDamage(finalDamage);
-        ApplyAilment(ability, target);
+        float finalDamage = ability.Damage + (ability.Damage / 100 * target.Stats.GetStat(StatType.DamageIncreas));
+        int trueDamage = Convert.ToInt32(target.Stats.GetStat(StatType.Armor) * (1 - (float)armorResist));
+        target.TakeDamage(trueDamage);
+        ApplyAilment(ability, target, trueDamage);
     }
 
     private static void HandleHeal(Ability ability, IDamageable target)
@@ -45,7 +46,8 @@ public static class AbilityEffectCalculator
 
     private static void HandleBuff(Ability ability, IDamageable target)
     {
-        Debug.Log("Buff");
+        Debug.Log("add buff");
+        target.Container.ApplyEffect(new EffectInstance(EffectType.Regenerate, ability.HealPower, EffectDatas.GetEffectData(EffectType.Ignite).RefreshMode, ability.AilmentDuration));
     }
 
     private static void HandleDebuff(Ability ability, IDamageable target)
@@ -53,72 +55,80 @@ public static class AbilityEffectCalculator
         Debug.Log("Debuff");
     }
 
-    private static void ApplyAilment(Ability ability, IDamageable target)
+    private static int CalculateEffect(float abilityEffect, float characterEffect)
     {
-        if(ability.AilmentChance > 0)
+        return Convert.ToInt32((abilityEffect + ((abilityEffect / 100 * characterEffect)))); // добавить эту логику для просчёта силы эффекта
+    }
+
+    private static void CalculatePower(EffectType type, Ability ability)
+    {
+
+    }
+
+    private static void ApplyAilment(Ability ability, IDamageable target, float trueDamage)
+    {
+        if (ability.Tags.HasFlag(AbilityTag.Fire)) // убрать - сделать без тегов, просчёт от конкретного урона( конвертации)
         {
-            if (ability.Tags.HasFlag(AbilityTag.Fire))
+            float roll = UnityEngine.Random.Range(0, 100);
+
+            if (roll <= CalculateEffect(ability.AilmentChance, ability._character.Stats.GetStat(StatType.AilmentChance)))
             {
-                float chance = UnityEngine.Random.Range(0, 100);
+                Debug.Log(ability.name + " накладывает поджог");
 
-                if(chance <= ability.AilmentChance)
-                {
-                    Debug.Log(ability.name + " накладывает поджог");
 
-                    float totalPower = (EffectDatas.GetEffectData(EffectType.Ignite).power / 100) * ability.AilmentPower;
-                    int power = Convert.ToInt32((float) ability.Damage / 100 * (totalPower + EffectDatas.GetEffectData(EffectType.Ignite).power));
+                float totalPower = EffectDatas.GetEffectData(EffectType.Ignite).power / 100 * (ability.AilmentPower + ability._character.Stats.GetStat(StatType.AilmentPower)) + EffectDatas.GetEffectData(EffectType.Ignite).power));
+                float power = trueDamage / 100f * totalPower;
 
-                    float duration = (EffectDatas.GetEffectData(EffectType.Ignite).Duration / 100) * (ability.AilmentDuration + 100);
+                float duration = (EffectDatas.GetEffectData(EffectType.Ignite).Duration / 100) * (ability.AilmentDuration + 100);
 
-                    target.Container.ApplyEffect(new EffectInstance(EffectType.Ignite, power, EffectDatas.GetEffectData(EffectType.Ignite).RefreshMode, duration));
-                }
+                target.Container.ApplyEffect(new EffectInstance(EffectType.Ignite, Convert.ToInt32(power), EffectDatas.GetEffectData(EffectType.Ignite).RefreshMode, duration));
             }
-            if (ability.Tags.HasFlag(AbilityTag.Cold))
-            {
-                float chance = UnityEngine.Random.Range(0, 100);
-
-                if (chance <= ability.AilmentChance)
-                {
-                    Debug.Log(ability.name + " накладывает охлаждение");
-
-                    float totalPower = (EffectDatas.GetEffectData(EffectType.Chill).power / 100) * ability.AilmentPower;
-                    int power = Convert.ToInt32((float) ability.Damage /100 * (totalPower + EffectDatas.GetEffectData(EffectType.Chill).power));
-
-                    float duration = (EffectDatas.GetEffectData(EffectType.Chill).Duration / 100) * ability.AilmentDuration + EffectDatas.GetEffectData(EffectType.Chill).Duration;
-
-                    target.Container.ApplyEffect(new EffectInstance(EffectType.Chill, power, EffectDatas.GetEffectData(EffectType.Chill).RefreshMode, duration));
-                }
-            }
-            /*i if (ability.Tags.HasFlag(AbilityTag.Lightning))
-            {
-                float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
-
-                if (chance >= ability.AilmentChance)
-                {
-                    target.Container.ApplyEffect(new EffectInstance(EffectType.Shock, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
-                }
-            }
-            if (ability.Tags.HasFlag(AbilityTag.Poison))
-            {
-                float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
-
-                if (chance >= ability.AilmentChance)
-                {
-                    target.Container. Effect(new EffectInstance(EffectType.Poison, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
-                }
-            }
-            if (ability.Tags.HasFlag(AbilityTag.Bleed))
-            {
-                float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
-
-                if (chance >= ability.AilmentChance)
-                {
-                    target.Container.ApplyEffect(new EffectInstance(EffectType.Bleed, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
-
-                }
-            }
-            */
         }
+        if (ability.Tags.HasFlag(AbilityTag.Cold))
+        {
+            float roll = UnityEngine.Random.Range(0, 100);
+
+            if (roll <= CalculateEffect(ability.AilmentChance, ability._character.Stats.GetStat(StatType.AilmentChance)))
+            {
+                Debug.Log(ability.name + " накладывает охлаждение");
+
+                float totalPower = (EffectDatas.GetEffectData(EffectType.Chill).power / 100) * ability.AilmentPower;
+                int power = Convert.ToInt32((float)ability.Damage / 100 * (totalPower + EffectDatas.GetEffectData(EffectType.Chill).power));
+
+                float duration = (EffectDatas.GetEffectData(EffectType.Chill).Duration / 100) * ability.AilmentDuration + EffectDatas.GetEffectData(EffectType.Chill).Duration;
+
+                target.Container.ApplyEffect(new EffectInstance(EffectType.Chill, power, EffectDatas.GetEffectData(EffectType.Chill).RefreshMode, duration));
+            }
+        }
+        /*i if (ability.Tags.HasFlag(AbilityTag.Lightning))
+        {
+            float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
+
+            if (chance >= ability.AilmentChance)
+            {
+                target.Container.ApplyEffect(new EffectInstance(EffectType.Shock, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
+            }
+        }
+        if (ability.Tags.HasFlag(AbilityTag.Poison))
+        {
+            float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
+
+            if (chance >= ability.AilmentChance)
+            {
+                target.Container. Effect(new EffectInstance(EffectType.Poison, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
+            }
+        }
+        if (ability.Tags.HasFlag(AbilityTag.Bleed))
+        {
+            float chance = UnityEngine.Random.Range(ability.AilmentChance, 100);
+
+            if (chance >= ability.AilmentChance)
+            {
+                target.Container.ApplyEffect(new EffectInstance(EffectType.Bleed, ability.AilmentPower, EffectDatas, ability.AilmentDuration));
+
+            }
+        }
+        */
     }
 
     public static void SetDataBase(EffectDataBase data)

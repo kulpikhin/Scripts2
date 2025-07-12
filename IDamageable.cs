@@ -14,16 +14,18 @@ public interface IDamageable
 
     public void SetTansform()
     {
-
     }
 
     public void TakeDamage(int damage)
     {
     }
 
-    public void TakeSwing()
+    public void Heal(int power)
     {
-        
+    }
+
+    public void TakeSwing()
+    {        
     }
 
     public void ApplyEffect(EffectInstance effect)

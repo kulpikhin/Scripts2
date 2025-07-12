@@ -7,6 +7,8 @@ public class ResourceBar : MonoBehaviour
     [SerializeField] private Character _character;
     [SerializeField] private Slider _hpSlider;
     [SerializeField] private Slider _mpSlider;
+    [SerializeField] private Image _hpBackGround;
+
 
     private int _maxHPValue;
     private int _maxMPValue;
@@ -22,6 +24,11 @@ public class ResourceBar : MonoBehaviour
     {
         _character.Stats.HealthChanged -= ChangeHPBar;
         _character.Stats.HealthChanged -= ChangeMPBar;
+    }
+
+    private void Start()
+    {
+        _hpBackGround.sprite = null;
     }
 
     private void ChangeHPBar(float value)
