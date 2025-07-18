@@ -22,5 +22,5 @@ public enum StatType
     PetDamage,
     AilmentChance,
     AilmentPower,
-    AilmentDuration
+    AilmentDuration,
 }

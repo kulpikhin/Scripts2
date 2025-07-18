@@ -7,6 +7,7 @@ using UnityEngine.VFX;
 public class Ability : MonoBehaviour
 {
     public AbilityType AbilityTypes;
+    public EffectType TypeEffect;
     public AbilityTag Tags;
     public List<AbilityTag> ListTags;
     public List<AbilityType> ListTypes;
@@ -30,7 +31,8 @@ public class Ability : MonoBehaviour
     public float AilmentChance;
     public float AilmentPower;
     public float AilmentDuration;
-    //public ParticleSystem VFXPrefab;
+    public ParticleSystem VFXPrefab;
+    public bool SelfAnimation;
 
     public Character _character;
 
@@ -55,12 +57,22 @@ public class Ability : MonoBehaviour
             {
                 foreach (IDamageable target in Targets)
                 {
-/*                    if (VFXPrefab != null)
+                    if (VFXPrefab != null)
                     {
-                        Debug.Log("vfx");
-                        ParticleSystem vfx = Instantiate(VFXPrefab, target._transform);
-                        VFXPrefab.Play();
-                    }*/
+                        Vector3 place;
+
+                        if (SelfAnimation)
+                        {
+                            place = transform.position;
+                        }
+                        else
+                        {
+                            place = target._transform.position;
+                        }
+
+                        ParticleSystem vfx = Instantiate(VFXPrefab, place - new Vector3(0, 2, 0), Quaternion.Euler(-100, 0, 0));
+                        vfx.Play();
+                    }
 
                     CalculateEffect(target);
                 }
@@ -77,12 +89,12 @@ public class Ability : MonoBehaviour
         foreach (IDamageable target in Targets)
         {
             Projectile projectile = Instantiate(Proj, _character._transform);
-/*
-            if (_character.Side == TeamSide.Right)
-            {
-                projectile.transform.localScale = new Vector2(projectile.transform.localScale.x * (-1), projectile.transform.localScale.y);
-            }
-*/
+            /*
+                        if (_character.Side == TeamSide.Right)
+                        {
+                            projectile.transform.localScale = new Vector2(projectile.transform.localScale.x * (-1), projectile.transform.localScale.y);
+                        }
+            */
             projectile.transform.position = new Vector2(StartPosition.position.x, StartPosition.position.y);
             Vector2 direction = target._transform.position - projectile.transform.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
