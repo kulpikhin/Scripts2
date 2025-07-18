@@ -17,7 +17,11 @@ public class StrongestStrategy : IEffectStrategy
 
         if (duplicate != null)
         {
+            // СНИМАЕМ влияние старого эффекта
+            container.OnExpire(duplicate);
+
             duplicate.OnExpired -= container.OnExpire;
+            duplicate.OnAply -= container.OnAply;
             list.Remove(duplicate);
         }
 
@@ -26,7 +30,9 @@ public class StrongestStrategy : IEffectStrategy
         newInstance.OnExpired += container.OnExpire;
         newInstance.OnAply += container.OnAply;
 
-        foreach (var inst in list) inst.IsStrongest = false;
+        foreach (var inst in list)
+            inst.IsStrongest = false;
+
         list.OrderByDescending(e => e.Power).First().IsStrongest = true;
     }
 
@@ -47,12 +53,10 @@ public class StrongestStrategy : IEffectStrategy
                 container.StopCoroutine(coro);
                 container.TypeCoroutines.Remove(type);
             }
-
-            container.Instances.Remove(type);
         }
         else
         {
-            foreach (var inst in list) inst.IsStrongest = false;
+            // После снятия старого эффекта пересчитать самый сильный
             list.OrderByDescending(e => e.Power).First().IsStrongest = true;
         }
     }

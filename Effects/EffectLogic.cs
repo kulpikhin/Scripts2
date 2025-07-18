@@ -6,8 +6,6 @@ public class EffectLogic : ScriptableObject
 
     public virtual void OnApply(IDamageable target, int power, EffectData data)
     {
-        Debug.Log("Apply");
-        
         if (data.VFXPrefab != null)
         {
             VFXPrefab = Instantiate(data.VFXPrefab, target._transform);
@@ -22,7 +20,6 @@ public class EffectLogic : ScriptableObject
 
     public virtual void OnExpired(IDamageable target, int power)
     {
-        Debug.Log("Expire");
         if (VFXPrefab != null)
         {
             VFXPrefab.Stop();

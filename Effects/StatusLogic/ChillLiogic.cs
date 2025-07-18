@@ -6,7 +6,7 @@ public class ChillLiogic : EffectLogic
 {
     public override void OnApply(IDamageable target, int power, EffectData data)
     {
-        Debug.Log("Chill = " + power);
+        Debug.Log("Chill Apple = " + power);
         target.Stats.AddStat(StatType.Speed, -power);
 
         Debug.Log("speed = " + target.Stats.GetStat(StatType.Speed));
