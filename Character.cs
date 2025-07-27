@@ -110,7 +110,7 @@ public class Character : MonoBehaviour, IDamageable
 
     public void TakeDamage(int damage)
     {
-        Debug.Log("Damage = " + damage);
+        //Debug.Log("Damage = " + damage);
         Stats.TakeDamage(damage);        
     }
 

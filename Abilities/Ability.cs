@@ -1,137 +1,46 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
-//[RequireComponent(typeof(AbilityCooldown))]
 public class Ability : MonoBehaviour
 {
-    public AbilityType AbilityTypes;
-    public EffectType TypeEffect;
-    public AbilityTag Tags;
+    private AbilityData abilityData;
+    public AbilityCooldown AbilityCooldawner { get; private set;}
+    public Character Owner { get; private set; }
+    public AbilityData AbilityDatas => abilityData;
+    public Transform StartPosition { get; private set; }
+    public List<AbilityType> Types { get; private set; }
     public List<AbilityTag> ListTags;
     public List<AbilityType> ListTypes;
 
-    public List<IDamageable> Targets;
-
-    public Projectile Proj;
-    public Transform StartPosition;
-
-    public int CountTargets;
-    public IconAbility icon;
-    public Sprite sprite;
-    public string AbilityName;
-    public string Description;
-    public int HealPower;
-    public int Damage;
-    public int ManaCost;
-    public float CritChance;
-    public float CritDamage;
-    public float CastTime;
-    public float AilmentChance;
-    public float AilmentPower;
-    public float AilmentDuration;
-    public ParticleSystem VFXPrefab;
-    public bool SelfAnimation;
-
-    public Character _character;
-
-    public AbilityCooldown CooldownAbility { get; private set; }
-
-    public void Init()
+    public void Initialize(Character owner, Transform startPosisition, AbilityData data)
     {
-        CooldownAbility = GetComponent<AbilityCooldown>();
-        Targets = new List<IDamageable>();
+        Owner = owner;
+        Transform StartPosition = startPosisition;
+        AbilityCooldawner = gameObject.AddComponent<AbilityCooldown>();
+        AbilityCooldawner.SetCooldawnDuration(data.CooldawnDuration);
+        abilityData = data;
         FeelLists();
+        data.StartPosition = StartPosition;
+        abilityData.Logic.Initialize(this);
     }
 
-    public virtual void Activate()
+    public void Cast()
     {
-        if (Targets.Count > 0)
-        {
-            if (Tags.HasFlag(AbilityTag.Projectile))
-            {
-                AvtivateProjectile();
-            }
-            else
-            {
-                foreach (IDamageable target in Targets)
-                {
-                    if (VFXPrefab != null)
-                    {
-                        Vector3 place;
-
-                        if (SelfAnimation)
-                        {
-                            place = transform.position;
-                        }
-                        else
-                        {
-                            place = target._transform.position;
-                        }
-
-                        ParticleSystem vfx = Instantiate(VFXPrefab, place - new Vector3(0, 2, 0), Quaternion.Euler(-100, 0, 0));
-                        vfx.Play();
-                    }
-
-                    CalculateEffect(target);
-                }
-            }
-
-            CooldownAbility.StartCooldawn(this);
-        }
-    }
-
-    public virtual void AvtivateProjectile()
-    {
-        List<Projectile> Projectiles = new List<Projectile>();
-
-        foreach (IDamageable target in Targets)
-        {
-            Projectile projectile = Instantiate(Proj, _character._transform);
-            /*
-                        if (_character.Side == TeamSide.Right)
-                        {
-                            projectile.transform.localScale = new Vector2(projectile.transform.localScale.x * (-1), projectile.transform.localScale.y);
-                        }
-            */
-            projectile.transform.position = new Vector2(StartPosition.position.x, StartPosition.position.y);
-            Vector2 direction = target._transform.position - projectile.transform.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
-            Projectiles.Add(projectile);
-            projectile.EndFlying += CalculatePrjectileEffect;
-            projectile.Launch(StartPosition.position, target);
-        }
-    }
-
-    private void CalculateEffect(IDamageable target)
-    {
-        AbilityEffectCalculator.CalculateEffect(this, target);
-
-        if (Tags.HasFlag(AbilityTag.Melee))
-        {
-            target.TakeSwing();
-        }
-    }
-
-    private void CalculatePrjectileEffect(IDamageable target, Projectile proj)
-    {
-        if (!target.IsDead)
-        {
-            AbilityEffectCalculator.CalculateEffect(this, target);
-            proj.EndFlying -= CalculatePrjectileEffect;
-        }
+        abilityData.Logic.Activate(abilityData.Targets, abilityData);
     }
 
     private void FeelLists()
     {
+        ListTags = new List<AbilityTag>();
+        ListTypes = new List<AbilityType>();
+
         foreach (AbilityTag tag in Enum.GetValues(typeof(AbilityTag)))
         {
             if (tag == AbilityTag.None)
                 continue;
 
-            if (Tags.HasFlag(tag))
+            if (abilityData.Tags.HasFlag(tag))
                 ListTags.Add(tag);
         }
 
@@ -140,7 +49,7 @@ public class Ability : MonoBehaviour
             if (type == AbilityType.None)
                 continue;
 
-            if (AbilityTypes.HasFlag(type))
+            if (abilityData.AbilityTypes.HasFlag(type))
                 ListTypes.Add(type);
         }
     }

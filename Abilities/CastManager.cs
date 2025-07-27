@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 using Slider = UnityEngine.UI.Slider;
 
@@ -17,6 +18,8 @@ public class CastManager : MonoBehaviour
     private TargetFinder _targetFinder;
     private CharacterAnimator _characterAnimator;
     private List<IDamageable> Targets;
+
+    public event UnityAction<Ability> CastEnd;
 
     public float CurrentCastTime { get; private set; }
 
@@ -43,7 +46,7 @@ public class CastManager : MonoBehaviour
     {
         foreach (Ability ability in character.Abilities.abilities)
         {
-            ability.CooldownAbility.CooldownEnd += AddToQueue;
+            ability.AbilityCooldawner.CooldownEnd += AddToQueue;
         }
     }
 
@@ -51,7 +54,7 @@ public class CastManager : MonoBehaviour
     {
         foreach (Ability ability in character.Abilities.abilities)
         {
-            ability.CooldownAbility.CooldownEnd -= AddToQueue;
+            ability.AbilityCooldawner.CooldownEnd -= AddToQueue;
         }
     }
 
@@ -72,13 +75,18 @@ public class CastManager : MonoBehaviour
         {
             if (!_casting)
             {
-                if (CheckMana(AbilitiesQueue.Peek().ManaCost))
+                if (CheckMana(AbilitiesQueue.Peek().AbilityDatas.ManaCost))
                 {
                     Targets = _targetFinder.GetTarget(character, AbilitiesQueue.Peek());
 
-                    AbilitiesQueue.Peek().Targets = Targets;
+                    foreach(IDamageable target in Targets)
+                    {
+                        Debug.Log(AbilitiesQueue.Peek().Owner.Name + " Метится в " + target.Name);
+                    }
 
-                    foreach (IDamageable target in AbilitiesQueue.Peek().Targets)
+                    AbilitiesQueue.Peek().AbilityDatas.Targets = Targets;
+
+                    foreach (IDamageable target in AbilitiesQueue.Peek().AbilityDatas.Targets)
                     {
                         target.Died += OnTargetDead;
                     }
@@ -106,9 +114,9 @@ public class CastManager : MonoBehaviour
 
         if (AbilitiesQueue.Count > 0)
         {
-            AbilitiesQueue.Peek().Targets.Remove(target);
+            AbilitiesQueue.Peek().AbilityDatas.Targets.Remove(target);
 
-            if (AbilitiesQueue.Peek().Targets.Count == 0)
+            if (AbilitiesQueue.Peek().AbilityDatas.Targets.Count == 0)
             {
                 StopCasting(character);
                 TryCastAbility();
@@ -148,7 +156,7 @@ public class CastManager : MonoBehaviour
     private IEnumerator Casting(Ability currentAbility)
     {
         CurrentCastTime = 0;
-        float castTime = CalculateCastTime(currentAbility.CastTime);
+        float castTime = CalculateCastTime(currentAbility.AbilityDatas.CastTime);
         slider.maxValue = castTime;
 
         float startTime = Time.time;
@@ -166,6 +174,8 @@ public class CastManager : MonoBehaviour
         slider.value = 0;
 
         character.Abilities.UseAbility(AbilitiesQueue.Dequeue());
+        CastEnd?.Invoke(currentAbility);
+
         _casting = false;
 
         TryCastAbility();

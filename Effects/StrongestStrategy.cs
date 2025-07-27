@@ -13,27 +13,37 @@ public class StrongestStrategy : IEffectStrategy
             container.Instances[type] = list;
         }
 
-        var duplicate = list.FirstOrDefault(e => e.Power == newInstance.Power);
+        // Находим текущий самый сильный
+        var currentStrongest = list.OrderByDescending(e => e.Power).FirstOrDefault();
 
-        if (duplicate != null)
+        if (currentStrongest != null)
         {
-            // СНИМАЕМ влияние старого эффекта
-            container.OnExpire(duplicate);
+            if (newInstance.Power > currentStrongest.Power)
+            {
+                // Снимаем старый эффект
+                container.OnExpire(currentStrongest);
 
-            duplicate.OnExpired -= container.OnExpire;
-            duplicate.OnAply -= container.OnAply;
-            list.Remove(duplicate);
+                currentStrongest.OnExpired -= container.OnExpire;
+                currentStrongest.OnAply -= container.OnAply;
+                list.Remove(currentStrongest);
+            }
+            else
+            {
+                // Новый слабее или равен — игнорируем
+                return;
+            }
         }
 
+        // Добавляем и подписываем
         list.Add(newInstance);
 
         newInstance.OnExpired += container.OnExpire;
         newInstance.OnAply += container.OnAply;
 
-        foreach (var inst in list)
-            inst.IsStrongest = false;
+        newInstance.IsStrongest = true;
 
-        list.OrderByDescending(e => e.Power).First().IsStrongest = true;
+        // ВАЖНО: только сейчас применяем влияние эффекта
+        container.OnAply(newInstance);
     }
 
     public void HandleExpiration(EffectContainer container, EffectInstance expiredInstance)
@@ -56,7 +66,6 @@ public class StrongestStrategy : IEffectStrategy
         }
         else
         {
-            // После снятия старого эффекта пересчитать самый сильный
             list.OrderByDescending(e => e.Power).First().IsStrongest = true;
         }
     }

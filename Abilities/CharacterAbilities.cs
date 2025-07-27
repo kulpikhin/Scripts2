@@ -1,21 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 public class CharacterAbilities : MonoBehaviour
 {
     [SerializeField] private Character character;
     [SerializeField] private AbilitiesIcon _ablitiesIcons;
 
-    public List<Ability> abilities;
+    public List<AbilityData> abilityList;
+
+    public List<Ability> abilities = new List<Ability>();
 
     private void OnEnable()
     {
         if (!TestMode.IsTest)
         {
+            SetAbilityList();
             SetAbilityIcons();
             StartAllCoolDawns();
-            SetCharcacterToAbilities();
             SetAllIcon();
             character.Died += StopAllCooldawn;
         }
@@ -28,14 +29,25 @@ public class CharacterAbilities : MonoBehaviour
 
     public void UseAbility(Ability ability)
     {
-        ability.Activate();
+        ability.Cast();
+    }
+
+    private void SetAbilityList()
+    {
+        foreach (var abilityData in abilityList)
+        {
+            Ability ability = gameObject.AddComponent<Ability>();
+            ability.Initialize(character, character.StartSpellPosition, abilityData);
+
+            abilities.Add(ability);
+        }
     }
 
     private void SetAbilityIcons()
     {
         for (int i = 0; i < abilities.Count; i++)
         {
-            abilities[i].icon = _ablitiesIcons.GetAbility(i);
+            abilities[i].AbilityDatas.icon = _ablitiesIcons.GetAbility(i);
         }
     }
 
@@ -43,7 +55,7 @@ public class CharacterAbilities : MonoBehaviour
     {
         for (int i = 0; i < abilities.Count; i++)
         {
-            _ablitiesIcons.SetIcon(i, abilities[i].sprite);
+            _ablitiesIcons.SetIcon(i, abilities[i].AbilityDatas.sprite);
         }
 
         _ablitiesIcons.FillEmptySlots();
@@ -51,12 +63,9 @@ public class CharacterAbilities : MonoBehaviour
 
     private void StartAllCoolDawns()
     {
-
         foreach (Ability ability in abilities)
-        {
-            ability.Init();
-
-            ability.CooldownAbility.StartCooldawn(ability);
+        {            
+            ability.AbilityCooldawner.StartCooldawn(ability);
         }
     }
 
@@ -64,16 +73,7 @@ public class CharacterAbilities : MonoBehaviour
     {
         foreach (Ability ability in abilities)
         {
-            ability.CooldownAbility.StopCooldown();
-        }
-    }
-
-    private void SetCharcacterToAbilities()
-    {
-        foreach (Ability ability in abilities)
-        {
-            ability._character = character;
-            ability.StartPosition = character.StartSpellPosition;
+            ability.AbilityCooldawner.StopCooldown();
         }
     }
 }

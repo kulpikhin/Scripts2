@@ -5,7 +5,7 @@ using UnityEngine.Events;
 //[RequireComponent(typeof(Ability))]
 public class AbilityCooldown : MonoBehaviour
 {
-    [SerializeField] private float _cooldawnDuration;
+    private float _cooldawnDuration;
 
     private Coroutine _cdCoroutine;
     private Ability _ability;
@@ -35,6 +35,12 @@ public class AbilityCooldown : MonoBehaviour
         }
 
         _cdCoroutine = StartCoroutine(CooldownRoutine(ability));
+
+    }
+
+    public void SetCooldawnDuration(float duration)
+    {
+        _cooldawnDuration = duration;
     }
 
     public void StopCooldown()
@@ -60,7 +66,8 @@ public class AbilityCooldown : MonoBehaviour
     private IEnumerator CooldownRoutine(Ability ability)
     {
         CurrentCDTime = 0f;
-        ability.icon.slider.maxValue = _cooldawnDuration;
+
+        ability.AbilityDatas.icon.slider.maxValue = _cooldawnDuration;
         float startTime = Time.time;
 
         IsCooldown = true;
@@ -68,8 +75,7 @@ public class AbilityCooldown : MonoBehaviour
         while (CurrentCDTime < _cooldawnDuration)
         {
             CurrentCDTime = Time.time - startTime;
-
-            ability.icon.slider.value = CurrentCDTime;
+            ability.AbilityDatas.icon.slider.value = CurrentCDTime;
 
             yield return null;
         }

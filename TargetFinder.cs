@@ -16,7 +16,7 @@ public class TargetFinder : MonoBehaviour
     {
         TeamSide side;
 
-        if (ability.AbilityTypes.HasFlag(AbilityType.Damage) || ability.AbilityTypes.HasFlag(AbilityType.Debuff))
+        if (ability.AbilityDatas.Tags.HasFlag(AbilityTag.Damage) || ability.AbilityDatas.Tags.HasFlag(AbilityTag.Debuff))
         {
             side = character.GetSide();
         }
@@ -25,7 +25,7 @@ public class TargetFinder : MonoBehaviour
             side = (TeamSide)((byte)character.GetSide() ^ 1);
         }
 
-        List<IDamageable> targets = battleManager.GetRandomTargets(side, ability.CountTargets);
+        List<IDamageable> targets = battleManager.GetRandomTargets(side, ability.AbilityDatas.CountTargets);
 
         return targets;
     }
