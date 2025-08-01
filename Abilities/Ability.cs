@@ -6,14 +6,14 @@ public class Ability : MonoBehaviour
 {
     private AbilityData abilityData;
     public AbilityCooldown AbilityCooldawner { get; private set;}
-    public Character Owner { get; private set; }
+    public IDamageable Owner { get; private set; }
     public AbilityData AbilityDatas => abilityData;
     public Transform StartPosition { get; private set; }
     public List<AbilityType> Types { get; private set; }
     public List<AbilityTag> ListTags;
     public List<AbilityType> ListTypes;
 
-    public void Initialize(Character owner, Transform startPosisition, AbilityData data)
+    public void Initialize(IDamageable owner, Transform startPosisition, AbilityData data)
     {
         Owner = owner;
         Transform StartPosition = startPosisition;

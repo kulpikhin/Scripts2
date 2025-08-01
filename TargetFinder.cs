@@ -29,4 +29,11 @@ public class TargetFinder : MonoBehaviour
 
         return targets;
     }
+
+    public List<IDamageable> GetTarget(TeamSide sideTarget, int countTargets)
+    {
+        List<IDamageable> targets = battleManager.GetRandomTargets(sideTarget, countTargets);
+
+        return targets;
+    }
 }

@@ -27,9 +27,9 @@ public class AbilityLogic : ScriptableObject
                     {
                         Vector3 place;
 
-                        if (data.SelfAnimation)
+                        if (data.SelfTarget)
                         {
-                            place = ability.Owner.transform.position;
+                            place = ability.Owner._transform.position;
                         }
                         else
                         {

@@ -8,8 +8,8 @@ public class EffectLogic : ScriptableObject
     {
         if (data.VFXPrefab != null)
         {
-            VFXPrefab = Instantiate(data.VFXPrefab, target._transform);
-            VFXPrefab.Play();
+            var vfxInstance = Instantiate(data.VFXPrefab, target._transform);
+            vfxInstance.Play();
         }
     }
 

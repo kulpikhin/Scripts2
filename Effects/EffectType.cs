@@ -8,5 +8,6 @@ public enum EffectType
     Bleed,
     Regenerate,
     Buff,
-    Debuff
+    Debuff,
+    WindFury
 }

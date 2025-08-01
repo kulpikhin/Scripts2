@@ -11,13 +11,11 @@ public interface IDamageable
     public CharacterAbilities Abilities { get; set; }
     public bool IsDead { get; set; }
     public Transform _transform { get; set; }
-
-    public void SetTansform()
-    {
-    }
+    public CastManager castManager { get; set; }
 
     public void TakeDamage(int damage)
     {
+        Stats.TakeDamage(damage);
     }
 
     public void Heal(int power)

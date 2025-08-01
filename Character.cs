@@ -15,10 +15,10 @@ public class Character : MonoBehaviour, IDamageable
 
     public UnityEngine.Transform StartSpellPosition;
     public CharacterClass Class;
-    public CastManager castManager;
+    public CastManager castManager { get; set; }
     public SubClass characterSubClass;
+    public Transform _transform { get; set; }
 
-    public UnityEngine.Transform _transform { get; set; }
     public bool IsDead { get; set; }
     public CharacterAbilities Abilities { get; set; }
 
@@ -31,6 +31,7 @@ public class Character : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
+        castManager = GetComponent<CastManager>();
         _regenRoutine = GetComponent<RegenRoutine>();
         _regenRoutine.SetCharecter(this);
         _transform = transform;
@@ -44,7 +45,8 @@ public class Character : MonoBehaviour, IDamageable
         Name = _name;
         Container = GetComponent<EffectContainer>();
         Condition = GetComponent<ConditionManager>();
-    }
+        _transform = transform;
+}
 
     private void FillBaseStats()
     {

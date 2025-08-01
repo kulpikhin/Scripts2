@@ -5,9 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Ability", menuName = "Abilities/Ability Data")]
 public class AbilityData : ScriptableObject
 {
+    public String Name;
+    
     public AbilityType AbilityTypes;
     public EffectType TypeEffect;
     public AbilityTag Tags;
+
 
     public List<IDamageable> Targets;
 
@@ -31,6 +34,8 @@ public class AbilityData : ScriptableObject
     public float AilmentDuration;
     public float CooldawnDuration;
     public ParticleSystem VFXPrefab;
-    public bool SelfAnimation;
-    public float SelfDuration;
+    public bool SelfTarget;
+    public float BuffDuration;
+    public int BuffPower;
+    public int AbilityChance;
 }

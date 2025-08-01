@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.TextCore.Text;
 using Slider = UnityEngine.UI.Slider;
 
 [RequireComponent(typeof(Character))]
@@ -15,12 +13,12 @@ public class CastManager : MonoBehaviour
     private Queue<Ability> AbilitiesQueue;
     private Coroutine _castingRoutine;
     private bool _casting;
-    private TargetFinder _targetFinder;
     private CharacterAnimator _characterAnimator;
     private List<IDamageable> Targets;
 
     public event UnityAction<Ability> CastEnd;
 
+    public TargetFinder _targetFinder { get; private set; }
     public float CurrentCastTime { get; private set; }
 
     private void Start()
@@ -75,23 +73,32 @@ public class CastManager : MonoBehaviour
         {
             if (!_casting)
             {
-                if (CheckMana(AbilitiesQueue.Peek().AbilityDatas.ManaCost))
-                {
-                    Targets = _targetFinder.GetTarget(character, AbilitiesQueue.Peek());
+                Ability ability = AbilitiesQueue.Peek();
 
-                    foreach(IDamageable target in Targets)
+                if (CheckMana(ability.AbilityDatas.ManaCost))
+                {
+                    if (ability.AbilityDatas.SelfTarget)
                     {
-                        Debug.Log(AbilitiesQueue.Peek().Owner.Name + " Метится в " + target.Name);
+                        Targets = new List<IDamageable>() { ability.Owner };
+                    }
+                    else
+                    {
+                        Targets = _targetFinder.GetTarget(character, ability);
                     }
 
-                    AbilitiesQueue.Peek().AbilityDatas.Targets = Targets;
+                    foreach (IDamageable target in Targets)
+                    {
+                        Debug.Log(ability.Owner.Name + " Метится в " + target.Name);
+                    }
 
-                    foreach (IDamageable target in AbilitiesQueue.Peek().AbilityDatas.Targets)
+                    ability.AbilityDatas.Targets = Targets;
+
+                    foreach (IDamageable target in ability.AbilityDatas.Targets)
                     {
                         target.Died += OnTargetDead;
                     }
 
-                    StartCasting(AbilitiesQueue.Peek());
+                    StartCasting(ability);
                 }
                 else
                 {

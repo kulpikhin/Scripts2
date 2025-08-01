@@ -36,6 +36,12 @@ public static class AbilityEffectCalculator
         float finalDamage = ability.AbilityDatas.Damage + ((float)ability.AbilityDatas.Damage / 100f * ability.Owner.Stats.GetStat(StatType.DamageIncreas));
         float toArmoreDamage = finalDamage * (1f - armorResist);
         int trueDamage = Convert.ToInt32(toArmoreDamage / 100 * target.Stats.GetStat(StatType.DamageTakenIncreas) + toArmoreDamage);
+
+        if(ability.AbilityDatas.Name == "WindProc")
+        {
+            Debug.Log("WindFury Deal " + trueDamage + " Damage");
+        }
+
         target.TakeDamage(trueDamage);
         ApplyAilment(ability, target, trueDamage);
     }
@@ -48,12 +54,13 @@ public static class AbilityEffectCalculator
     private static void HandleBuff(Ability ability, IDamageable target)
     {
         Debug.Log("add buff");
-        target.Container.ApplyEffect(new EffectInstance(ability.AbilityDatas.TypeEffect, ability.AbilityDatas.HealPower, EffectDatas.GetEffectData(ability.AbilityDatas.TypeEffect).RefreshMode, ability.AbilityDatas.AilmentDuration));
+        target.Container.ApplyEffect(new EffectInstance(ability.AbilityDatas.TypeEffect, ability.AbilityDatas.BuffPower, EffectDatas.GetEffectData(ability.AbilityDatas.TypeEffect).RefreshMode, ability.AbilityDatas.BuffDuration));
     }
 
     private static void HandleDebuff(Ability ability, IDamageable target)
     {
         Debug.Log("Debuff");
+        target.Container.ApplyEffect(new EffectInstance(ability.AbilityDatas.TypeEffect, ability.AbilityDatas.BuffPower, EffectDatas.GetEffectData(ability.AbilityDatas.TypeEffect).RefreshMode, ability.AbilityDatas.BuffDuration));
     }
 
     private static int CalculateEffectChance(float abilityEffect, float characterEffect)
