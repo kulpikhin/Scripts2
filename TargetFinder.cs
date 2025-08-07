@@ -25,7 +25,7 @@ public class TargetFinder : MonoBehaviour
             side = (TeamSide)((byte)character.GetSide() ^ 1);
         }
 
-        List<IDamageable> targets = battleManager.GetRandomTargets(side, ability.AbilityDatas.CountTargets);
+        List<IDamageable> targets = battleManager.GetRandomTargets(side, ability.CountTargets);
 
         return targets;
     }

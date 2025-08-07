@@ -47,7 +47,7 @@ public class CharacterAbilities : MonoBehaviour
     {
         for (int i = 0; i < abilities.Count; i++)
         {
-            abilities[i].AbilityDatas.icon = _ablitiesIcons.GetAbility(i);
+            abilities[i].icon = _ablitiesIcons.GetAbility(i);
         }
     }
 

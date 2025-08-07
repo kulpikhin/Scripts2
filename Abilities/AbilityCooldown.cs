@@ -25,7 +25,7 @@ public class AbilityCooldown : MonoBehaviour
     }
 
     public void StartCooldawn(Ability ability)
-    {        
+    {
         IsCooldown = true;
         CurrentCDTime = _cooldawnDuration;
 
@@ -35,7 +35,6 @@ public class AbilityCooldown : MonoBehaviour
         }
 
         _cdCoroutine = StartCoroutine(CooldownRoutine(ability));
-
     }
 
     public void SetCooldawnDuration(float duration)
@@ -67,15 +66,16 @@ public class AbilityCooldown : MonoBehaviour
     {
         CurrentCDTime = 0f;
 
-        ability.AbilityDatas.icon.slider.maxValue = _cooldawnDuration;
+        ability.icon.slider.maxValue = _cooldawnDuration;
+
         float startTime = Time.time;
 
-        IsCooldown = true;
-
+        IsCooldown = true;      
+            
         while (CurrentCDTime < _cooldawnDuration)
         {
             CurrentCDTime = Time.time - startTime;
-            ability.AbilityDatas.icon.slider.value = CurrentCDTime;
+            ability.icon.slider.value = CurrentCDTime;
 
             yield return null;
         }

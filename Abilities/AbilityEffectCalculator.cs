@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System;
 using System.Collections.Generic;
 
@@ -25,7 +25,7 @@ public static class AbilityEffectCalculator
             }
             else
             {
-                Debug.LogWarning($"ÕÂÚ Ó·‡·ÓÚ˜ËÍ‡ ‰Îˇ ÚËÔ‡: {type}");
+                Debug.LogWarning($"–ù–µ—Ç –æ–±—Ä–∞–±–æ—Ç—á–∏–∫–∞ –¥–ª—è —Ç–∏–ø–∞: {type}");
             }
         }
     }
@@ -33,14 +33,8 @@ public static class AbilityEffectCalculator
     private static void HandleDamage(Ability ability, IDamageable target)
     {
         float armorResist = target.Stats.GetStat(StatType.Armor) / 100;
-        float finalDamage = ability.AbilityDatas.Damage + ((float)ability.AbilityDatas.Damage / 100f * ability.Owner.Stats.GetStat(StatType.DamageIncreas));
-        float toArmoreDamage = finalDamage * (1f - armorResist);
+        float toArmoreDamage = ability.Damage * (1f - armorResist);
         int trueDamage = Convert.ToInt32(toArmoreDamage / 100 * target.Stats.GetStat(StatType.DamageTakenIncreas) + toArmoreDamage);
-
-        if(ability.AbilityDatas.Name == "WindProc")
-        {
-            Debug.Log("WindFury Deal " + trueDamage + " Damage");
-        }
 
         target.TakeDamage(trueDamage);
         ApplyAilment(ability, target, trueDamage);
@@ -48,18 +42,26 @@ public static class AbilityEffectCalculator
 
     private static void HandleHeal(Ability ability, IDamageable target)
     {
-        target.Stats.Heal(ability.AbilityDatas.HealPower);
+        target.Stats.Heal(ability.HealPower);
     }
 
     private static void HandleBuff(Ability ability, IDamageable target)
     {
         Debug.Log("add buff");
-        target.Container.ApplyEffect(new EffectInstance(ability.AbilityDatas.TypeEffect, ability.AbilityDatas.BuffPower, EffectDatas.GetEffectData(ability.AbilityDatas.TypeEffect).RefreshMode, ability.AbilityDatas.BuffDuration));
+
+        EffectInstance instance = new EffectInstance(
+            ability.TypeEffect,
+            ability.HealPower,
+            EffectDatas.GetEffectData(ability.TypeEffect).RefreshMode,
+            ability.BuffDuration
+        );
+
+        ability.Logic.TrackEffectInstance(instance); // ‚Üê –ø–æ–¥–ø–∏—Å–∫–∞ –Ω–∞ OnAply –∏ OnExpired
+        target.Container.ApplyEffect(instance);
     }
 
     private static void HandleDebuff(Ability ability, IDamageable target)
     {
-        Debug.Log("Debuff");
         target.Container.ApplyEffect(new EffectInstance(ability.AbilityDatas.TypeEffect, ability.AbilityDatas.BuffPower, EffectDatas.GetEffectData(ability.AbilityDatas.TypeEffect).RefreshMode, ability.AbilityDatas.BuffDuration));
     }
 

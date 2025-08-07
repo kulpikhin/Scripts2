@@ -6,11 +6,7 @@ public class EffectLogic : ScriptableObject
 
     public virtual void OnApply(IDamageable target, int power, EffectData data)
     {
-        if (data.VFXPrefab != null)
-        {
-            var vfxInstance = Instantiate(data.VFXPrefab, target._transform);
-            vfxInstance.Play();
-        }
+
     }
 
     public virtual void OnTick(IDamageable target, int power)
@@ -20,10 +16,6 @@ public class EffectLogic : ScriptableObject
 
     public virtual void OnExpired(IDamageable target, int power)
     {
-        if (VFXPrefab != null)
-        {
-            VFXPrefab.Stop();
-            VFXPrefab = null;
-        }
+
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,13 +8,15 @@ public class Character : MonoBehaviour, IDamageable
     [SerializeField] private string _name;
     [SerializeField] public TeamSide Side;
     [SerializeField] public CharacterAbilities abilities;
+    [SerializeField] private Transform _startSpellPosition;
 
     private CharacterAnimator _animator;
     private RegenRoutine _regenRoutine;
+    private Coroutine controlRoutine;
 
     public event UnityAction<IDamageable> Died;
 
-    public UnityEngine.Transform StartSpellPosition;
+    public Transform StartSpellPosition { get; set; }
     public CharacterClass Class;
     public CastManager castManager { get; set; }
     public SubClass characterSubClass;
@@ -28,9 +31,12 @@ public class Character : MonoBehaviour, IDamageable
     public EffectContainer Container { get; set; }
     public StatContainer Stats { get; set; }
     public ConditionManager Condition { get; private set; }
+    public bool IsControlled { get; private set; }
+
 
     private void OnEnable()
     {
+        StartSpellPosition = _startSpellPosition;
         castManager = GetComponent<CastManager>();
         _regenRoutine = GetComponent<RegenRoutine>();
         _regenRoutine.SetCharecter(this);
@@ -118,7 +124,10 @@ public class Character : MonoBehaviour, IDamageable
 
     private void OnDeath()
     {
-        Debug.Log(Name + " dead");
+        if (Container != null)
+            Container.ClearAllEffects();
+
+        IsDead = true;
         Died?.Invoke(this);
     }
 }

@@ -28,7 +28,7 @@ public class EffectDataBase : ScriptableObject
     {
         EffectData foundedEffectData;
 
-        if(effectBase.TryGetValue(effectType, out EffectData effectData))
+        if (effectBase.TryGetValue(effectType, out EffectData effectData))
         {
             foundedEffectData = effectData;
         }

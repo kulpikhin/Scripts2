@@ -64,6 +64,8 @@ public class BattleManager : MonoBehaviour
 
     private void onPlayerDeth(IDamageable character)
     {
+        character.Container.ClearAllEffects();
+
         if (character.GetSide() == TeamSide.Right)
         {
             _countRightTeam--;
@@ -114,6 +116,17 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log(side.ToString() + " win");
 
+        ClearAllEffects();
         BattleCondition.GameContinues = false;
+    }
+
+    public void ClearAllEffects()
+    {
+        IDamageable[] units = FindObjectsOfType<MonoBehaviour>().OfType<IDamageable>().ToArray();
+
+        foreach (var unit in units)
+        {
+            unit.Container.ClearAllEffects();
+        }
     }
 }

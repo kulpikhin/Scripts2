@@ -69,13 +69,9 @@ public class EffectContainer : MonoBehaviour
 
     internal void HandleTick(EffectInstance inst)
     {
-        // 1) Старая логика: наносим урон
         var data = EffectDatas.GetEffectData(inst.Type);
         data.Logic.OnTick(_owner, inst.Power);
 
-        //Debug.Log("tick " + inst.Power);
-
-        // 2) Новая строка: обновляем UI-иконку этого эффекта
         if (_activeIcons.TryGetValue(inst.Type, out var icon))
             icon.RefreshUI();
     }
@@ -133,5 +129,26 @@ public class EffectContainer : MonoBehaviour
             if (icon != null) Destroy(icon.gameObject);
             _activeIcons.Remove(type);
         }
+    }
+
+    public void ClearAllEffects()
+    {
+        foreach (var kvp in Instances)
+        {
+            foreach (var effect in kvp.Value)
+            {
+                effect.Stop();
+            }
+        }
+
+        Instances.Clear();
+
+        foreach (var coro in TypeCoroutines.Values)
+        {
+            if (coro != null)
+                StopCoroutine(coro);
+        }
+
+        TypeCoroutines.Clear();
     }
 }

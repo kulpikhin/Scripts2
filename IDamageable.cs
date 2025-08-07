@@ -12,6 +12,7 @@ public interface IDamageable
     public bool IsDead { get; set; }
     public Transform _transform { get; set; }
     public CastManager castManager { get; set; }
+    public Transform StartSpellPosition { get; set; }
 
     public void TakeDamage(int damage)
     {

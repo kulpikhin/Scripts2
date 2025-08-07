@@ -42,6 +42,7 @@ public class EffectInstance
 
     public void Start()
     {
+        Debug.Log("Run " + Duration);
         Stop();
 
         if (RefreshMode == RefreshEffectMode.StrongestMode) return;
@@ -66,7 +67,8 @@ public class EffectInstance
     private IEnumerator Run()
     {
         float interval = 1f;
-        int ticks = Mathf.FloorToInt(Duration / interval);
+        int ticks = Mathf.FloorToInt(Duration / interval);       
+
         OnAply?.Invoke(this);
 
         for (int i = 0; i < ticks; i++)
